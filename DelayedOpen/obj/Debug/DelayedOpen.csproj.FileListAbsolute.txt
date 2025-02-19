@@ -1,0 +1,6 @@
+D:\Projects\DelayedOpen\DelayedOpen\bin\Debug\DelayedOpen.exe
+D:\Projects\DelayedOpen\DelayedOpen\bin\Debug\DelayedOpen.pdb
+D:\Projects\DelayedOpen\DelayedOpen\obj\Debug\DelayedOpen.csproj.AssemblyReference.cache
+D:\Projects\DelayedOpen\DelayedOpen\obj\Debug\DelayedOpen.csproj.CoreCompileInputs.cache
+D:\Projects\DelayedOpen\DelayedOpen\obj\Debug\DelayedOpen.exe
+D:\Projects\DelayedOpen\DelayedOpen\obj\Debug\DelayedOpen.pdb
