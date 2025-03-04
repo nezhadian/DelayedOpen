@@ -8,12 +8,21 @@ namespace DelayedOpen
     internal class Program
     {
         private static string _filepath = "time.txt";
+        private static readonly Mutex ProgramHandle = new Mutex(true, "PreventMultipleInstances");
         public static void Main(string[] args)
         {
+            if (IsAnotherInstanceRunning())
+            {
+                Console.WriteLine("multiple instances are already running.");
+                BeforeClosing(false);
+                return;
+            }
+            
+            
             if (args.Length == 0 || !File.Exists(args[0]))
             {
                 Console.WriteLine("Please specify a file path");
-                CloseTimeout();
+                BeforeClosing();
                 return;
             }
             
@@ -25,7 +34,7 @@ namespace DelayedOpen
             if (!IsRiderRunning())
             {
                 Console.WriteLine("Rider is not running");
-                CloseTimeout();
+                BeforeClosing();
                 return;
             }
             
@@ -38,7 +47,7 @@ namespace DelayedOpen
             if (elapsed < TimeSpan.FromSeconds(30))
             {
                 Console.WriteLine("Waiting...");
-                CloseTimeout();
+                BeforeClosing();
                 return;
             }
 
@@ -46,15 +55,27 @@ namespace DelayedOpen
             {
                 Console.WriteLine("90 seconds elapsed. reset timer...");
                 SaveDateAndTime();
-                CloseTimeout();
+                BeforeClosing();
                 return;
             }
             
             Console.WriteLine("Launching...");
             StartProgram(args[0]);
             SaveDateAndTime();
-            CloseTimeout();
+            BeforeClosing();
 
+        }
+
+        private static bool IsAnotherInstanceRunning()
+        {
+            try
+            {
+                return !ProgramHandle.WaitOne(TimeSpan.Zero, true);
+            }
+            catch (AbandonedMutexException)
+            {
+                return true;
+            }
         }
 
         private static void StartProgram(string appPath)
@@ -91,9 +112,12 @@ namespace DelayedOpen
             File.WriteAllText(_filepath, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
         }
 
-        private static void CloseTimeout()
+        private static void BeforeClosing(bool releaseMutex = true)
         {
             Thread.Sleep(2000);
+            
+            if(releaseMutex)
+                ProgramHandle.ReleaseMutex();
         }
 
         static bool IsRiderRunning()
